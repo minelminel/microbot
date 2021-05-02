@@ -48,4 +48,45 @@ $(document).ready(function () {
     console.log(`Sending new desired position`);
     socket.send(val);
   }
+  
+  /* Reuseable listener for press and hold. On mobile browsers, this action
+   * triggers a "contextmenu" event natively which can either be suppressed
+   * or handled explicitly with duplicate callback logic
+   */
+  function longclick(element, callback) {
+    var pressTimer;
+    element.mouseup(function(){
+      clearTimeout(pressTimer);
+      return false;
+    }).mousedown(function(){
+      pressTimer = window.setTimeout(callback, 750);
+      return false; 
+    });
+  }
+  // Suppress mobile context menu
+  // window.oncontextmenu = function() { return false; }
+
+  /* Save current state as preset */
+  longclick($("#presetButtonA"), function() {
+    console.log("Updated Preset A")
+  });
+
+  longclick($("#presetButtonB"), function() {
+    console.log("Updated Preset B")
+  });
+
+  /* Apply saved preset state */
+  $("#presetButtonA").dblclick(function() {
+    console.log("Apply Preset A");
+  });
+
+  $("#presetButtonB").dblclick(function() {
+    console.log("Apply Preset B");
+  });
+
+  /* Fetch and apply latest state from backend */
+  $("#sync").on("click", function() {
+    console.log("Syncing state")
+  })
+
 });
