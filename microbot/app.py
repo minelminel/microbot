@@ -1,12 +1,23 @@
-import time
+"""
+app.py
+"""
+import time, uuid
 from flask import Flask, session, render_template, url_for, jsonify
-from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room, rooms, disconnect
+from flask_socketio import (
+    SocketIO,
+    send,
+    emit,
+    join_room,
+    leave_room,
+    close_room,
+    rooms,
+    disconnect,
+)
 
 app = Flask(__name__)
-app.config.update({
-    "SECRET_KEY": "asdf1234"
-})
+app.config.update({"SECRET_KEY": "asdf1234"})
 socketio = SocketIO(app)
+
 
 class State(object):
     min_position = 0
@@ -17,9 +28,11 @@ class State(object):
         keys = ("min_position", "max_position", "current_position")
         return {key: getattr(self, key) for key in keys}
 
+
 state = State()
 
 LOCK = False
+
 
 @socketio.on("my_event")  # namespace="/something"
 def join_test(message):
@@ -27,10 +40,11 @@ def join_test(message):
     print(message)
     join_room(message["room"])
     session["receive_count"] = session.get("receive_count", 0) + 1
-    emit("my_response", {
-        "data": f"In rooms: {rooms()}",
-        "count": session["receive_count"]
-    })
+    emit(
+        "my_response",
+        {"data": f"In rooms: {rooms()}", "count": session["receive_count"]},
+    )
+
 
 @socketio.on("message")
 def handle_message(msg):
@@ -52,20 +66,25 @@ def handle_message(msg):
         time.sleep(0.01)
         send(state.current_position, broadcast=True)
     LOCK = False
+    emit("info", {"type": "info", "memo": "hello world!", "guid": str(uuid.uuid4())})
+
 
 @app.route("/")
 def index():
     print(state.state())
     return render_template("index.html", state=state.state())
 
+
 @app.route("/settings")
 def settings():
     return jsonify(settings={})
 
+
 if __name__ == "__main__":
     # TODO run this only in dev
     from werkzeug.debug import DebuggedApplication
+
     app.debug = True
     app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
-    
+
     socketio.run(app)

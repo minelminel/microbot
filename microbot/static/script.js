@@ -28,6 +28,31 @@ $(document).ready(function () {
     $('#currentPosition').val(msg);
   });
 
+  /* Listen for info messages and push a toast notification */
+  socket.on("info", function( msg, cb) {
+    console.log("Received an info message: " + msg)
+    const element = `
+      <div id="${msg.guid}" class="toast" role="alert" data-delay="1000">
+        <div class="toast-header">
+          <strong class="mr-auto">${msg.type.toUpperCase()}</strong>
+          <small class="text-muted">{{ msg.room }}</small>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          ${msg.memo}
+        </div>
+      </div>
+    `;
+    $("#toasts").append(element);
+    $(`#${msg.guid}`).toast("show");
+
+    if (cb) {
+      cb();
+    }
+  })
+
   /* Triggered live while slider is moved */
   $('#slider').bind('input', function () {
     console.log(`Updating current slider position`);
@@ -87,6 +112,10 @@ $(document).ready(function () {
   /* Fetch and apply latest state from backend */
   $("#sync").on("click", function() {
     console.log("Syncing state")
+    location.reload();
   })
+
+  /* Enable toast notifications */
+  $(".toast").toast("show");
 
 });

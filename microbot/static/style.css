@@ -25,3 +25,7 @@ legend {
 .text-center {
     text-align: center;
 }
+
+.toast {
+    min-width: 20rem;
+}
