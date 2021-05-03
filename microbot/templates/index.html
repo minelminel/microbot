@@ -48,9 +48,8 @@
       <!-- Position it -->
       <div id="toasts" style="position: absolute; top: 0; right: 0; z-index: 999;">
         <!-- Then put toasts within -->
-        <div class="toast" role="alert" data-autohide="false">
+        <!-- <div class="toast" role="alert" data-autohide="false">
           <div class="toast-header">
-            <!-- should really have a colored icon for each message type -->
             <strong class="mr-auto">{% raw %}{{ msg.type | upper }}{% endraw %}</strong>
             <small class="text-muted">{% raw %}{{ msg.room }}{% endraw %}</small>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
@@ -60,8 +59,8 @@
           <div class="toast-body">
             {% raw %}{{ msg.memo }}{% endraw %}
           </div>
-        </div>
-        <!-- put another toast here... -->
+        </div> -->
+        <!-- More Toasts Here... -->
       </div>
     </div>
     <!-- END TOAST NOTIFICATIONS -->
@@ -71,46 +70,46 @@
         <div class="col">
           <form>
             <fieldset>
-            <legend>X-axis &lrarr;</legend>
+            <legend>{{ motors.X.name }}&nbsp;&lrarr;</legend>
             <div class="form-group">
               <label for="slider"></label>
               <input
+                id="sliderX"
                 type="range"
-                min="{{ state.min_position }}"
-                max="{{ state.max_position }}"
-                value="{{ state.current_position }}"
-                id="slider"
+                min="{{ motors.X.min_position }}"
+                max="{{ motors.X.max_position }}"
+                value="{{ motors.X.position }}"
                 class="w-100 text-center"
               />
             </div>
             <div class="form-group">
               <label for="sliderPosition">Slider Position</label>
               <input
+                id="sliderPositionX"
                 type="number"
-                id="sliderPosition"
-                value="{{ state.current_position }}"
-                disabled
+                value="{{ motors.X.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             <div class="form-group">
               <label for="desiredPosition">Desired Position</label>
               <input
+                id="desiredPositionX"
                 type="number"
-                id="desiredPosition"
-                value="{{ state.current_position }}"
-                disabled
+                value="{{ motors.X.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             <div class="form-group">
               <label for="currentPosition">Current Position</label>
               <input
+                id="currentPositionX"
                 type="number"
-                id="currentPosition"
-                value="{{ state.current_position }}"
-                disabled
+                value="{{ motors.X.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             </fieldset>
@@ -119,40 +118,46 @@
         <div class="col">
           <form>
             <fieldset>
-            <legend>Y-axis &udarr;</legend>
+            <legend>{{ motors.Y.name }}&nbsp;&udarr;</legend>
             <div class="form-group">
               <label for="Yslider"></label>
               <input
+                id="sliderY"
                 type="range"
-                id="Yslider"
+                min="{{ motors.Y.min_position }}"
+                max="{{ motors.Y.max_position }}"
+                value="{{ motors.Y.position }}"
                 class="w-100 text-center"
               />
             </div>
             <div class="form-group">
-              <label for="YsliderPosition">Slider Position</label>
+              <label for="sliderPositionY">Slider Position</label>
               <input
+                id="sliderPositionY"
                 type="number"
-                id="YsliderPosition"
-                disabled
+                value="{{ motors.Y.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             <div class="form-group">
-              <label for="YdesiredPosition">Desired Position</label>
+              <label for="desiredPositionY">Desired Position</label>
               <input
+                id="desiredPositionY"
                 type="number"
-                id="YdesiredPosition"
-                disabled
+                value="{{ motors.Y.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             <div class="form-group">
-              <label for="YcurrentPosition">Current Position</label>
+              <label for="currentPositionY">Current Position</label>
               <input
+                id="currentPositionY"
                 type="number"
-                id="YcurrentPosition"
-                disabled
+                value="{{ motors.Y.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             </fieldset>
@@ -163,40 +168,46 @@
         <div class="col">
           <form>
             <fieldset>
-            <legend>Z-axis &empty;</legend>
+            <legend>{{ motors.Z.name }}&nbsp;&empty;</legend>
             <div class="form-group">
-              <label for="Zslider"></label>
+              <label for="sliderZ"></label>
               <input
+                id="sliderZ"
                 type="range"
-                id="Zslider"
+                min="{{ motors.Z.min_position }}"
+                max="{{ motors.Z.max_position }}"
+                value="{{ motors.Z.position }}"
                 class="w-100 text-center"
               />
             </div>
             <div class="form-group">
-              <label for="ZsliderPosition">Slider Position</label>
+              <label for="sliderPositionZ">Slider Position</label>
               <input
+                id="sliderPositionZ"
                 type="number"
-                id="ZsliderPosition"
-                disabled
+                value="{{ motors.Z.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             <div class="form-group">
-              <label for="ZdesiredPosition">Desired Position</label>
+              <label for="desiredPositionZ">Desired Position</label>
               <input
+                id="desiredPositionZ"
                 type="number"
-                id="ZdesiredPosition"
-                disabled
+                value="{{ motors.Z.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             <div class="form-group">
-              <label for="ZcurrentPosition">Current Position</label>
+              <label for="currentPositionZ">Current Position</label>
               <input
+                id="currentPositionZ"
                 type="number"
-                id="ZcurrentPosition"
-                disabled
+                value="{{ motors.Z.position }}"
                 class="w-100 text-center"
+                disabled
               />
             </div>
             </fieldset>

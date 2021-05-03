@@ -7,6 +7,27 @@ log = logging.getLogger(__name__)
 
 
 class Controller(object):
+    """
+    Manager class for interaction with stepper motors and location presets.
+
+        Controller(motors={}, presets={})
+
+    Attributes
+    ----------
+        motors : dict
+        presets : dict
+
+    Methods
+    -------
+    Presets
+        get_preset_state(preset: str)
+        assign_preset(preset: str, state: dict)
+        apply_preset(preset: str)
+    Motors
+        get_motor_state(motor: str)
+        visit_position(state: dict)
+        get_motor_config(motor: str)
+    """
 
     _motors = {}
     _presets = {}
@@ -60,3 +81,10 @@ class Controller(object):
         log.info(f"Visiting motor position: {state}")
         for motor, position in state.items():
             self._motors[motor].visit(position)
+
+    # TODO: add test cases
+    def get_motor_config(self, motor: str = None) -> dict:
+        log.info(f"Getting motor config: {motor}")
+        if motor:
+            return self._motors[motor].config()
+        return {k: v.config() for k, v in self._motors.items()}

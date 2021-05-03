@@ -16,6 +16,14 @@ class Message(SimpleNamespace):
 
 
 class MessageSchema(ma.Schema):
+    # what is the purpose of this message
+    # ex. "info"
+    type = ma.fields.Str(
+        default="message",
+        missing="message",
+        validate=ma.validate.OneOf(choices=["message", "info", "error"]),
+    )
+
     # epoch milliseconds
     # ex. 1619829580766
     time = ma.fields.Int(default=make_time, missing=make_time)
@@ -30,7 +38,7 @@ class MessageSchema(ma.Schema):
 
     # json object
     # ex. { "X": 10 }
-    data = ma.fields.Dict(default=dict, missing=dict)
+    data = ma.fields.Raw(default=None, missing=None)
 
     # random unique identifier
     # ex. "fa80d178-b87b-4360-ad90-83ca0888d41d"

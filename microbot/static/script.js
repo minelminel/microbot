@@ -1,36 +1,55 @@
-console.log(`script.js`);
+console.log(`Loaded script.js`);
 
 $(document).ready(function () {
   var socket = io.connect('http://localhost:5000');
 
+  /**
+   * Room Enumeration
+   */
+  // TODO: maybe fetch this from an endpoint?
+  const Room = Object.freeze({
+    MOTOR: "motor",
+    PRESET_ASSIGN: "preset.assign",
+    PRESET_APPLY: "preset.apply",
+    LOG: "log",
+    INFO: "info",
+    ERROR: "error",
+  });
+
+  /**
+   * Rather than logging to the browser console, use a designated
+   * DOM element with autoscroll to display granular feedback.
+   */
   function log(msg) {
     $('#logs').prepend(`<pre>${msg}</pre>`);
   }
 
+  /* Fetch and apply latest state from backend */
+  $("#sync").on("click", function() {
+    log("Syncing state")
+    location.reload();
+  })
+
+  /* Enable toast notifications */
+  $(".toast").toast("show");
+
   socket.on('connect', function () {
-    console.log('User has connected');
-    socket.emit('my_event', {
-      data: "I'm connected!",
-      room: 'A'
-    });
+    log('Connected to server');
+    /* `connect` is a reserved keyword */
+    // socket.emit('my_event', {
+    //   data: "I'm connected!",
+    //   room: 'A'
+    // });
   });
 
-  socket.on('my_response', function (msg, cb) {
-    console.log(`Received message: ${msg}`);
-    if (cb) {
-      cb();
-    }
-  });
-
-  socket.on('message', function (msg) {
-    log(msg);
-    console.log(msg);
-    $('#currentPosition').val(msg);
-  });
+  /* Listed for log messages and push to the log component */
+  socket.on(Room.LOG, function(msg) {
+    log(`[${msg.type}] ${msg.memo}`);
+  })
 
   /* Listen for info messages and push a toast notification */
   socket.on("info", function( msg, cb) {
-    console.log("Received an info message: " + msg)
+    console.log(`Received info message: ${JSON.stringify(msg)}`)
     const element = `
       <div id="${msg.guid}" class="toast" role="alert" data-delay="1000">
         <div class="toast-header">
@@ -53,27 +72,6 @@ $(document).ready(function () {
     }
   })
 
-  /* Triggered live while slider is moved */
-  $('#slider').bind('input', function () {
-    console.log(`Updating current slider position`);
-    log(`Updating current slider position...`);
-    $('#sliderPosition').val($('#slider').val());
-  });
-
-  /* Triggered when slider is finished moving */
-  $('#slider').on('change', function () {
-    console.log(`Slider finished moving, updating destination`);
-    log(`Slider finished moving, updating destination`);
-    $('#desiredPosition').val($('#slider').val());
-    sendDesiredPosition($('#slider').val());
-  });
-
-  /* Triggered once we have a new destination */
-  function sendDesiredPosition(val) {
-    console.log(`Sending new desired position`);
-    socket.send(val);
-  }
-  
   /* Reuseable listener for press and hold. On mobile browsers, this action
    * triggers a "contextmenu" event natively which can either be suppressed
    * or handled explicitly with duplicate callback logic
@@ -88,34 +86,121 @@ $(document).ready(function () {
       return false; 
     });
   }
-  // Suppress mobile context menu
+  /* Suppress mobile context menu */
   // window.oncontextmenu = function() { return false; }
+
+  /* 
+   * Triggered once we have a new destination. This is a reusable function
+   * which can be recycled for each axis/motor.
+   */
+  function sendDesiredPosition(motor, value) {
+    log(`Sending new desired position for: ${motor}`);
+    socket.emit(Room.MOTOR, {
+      room: Room.MOTOR,
+      data: {
+        [motor]: value
+      }
+    })
+  }
+
+  /* Receive the broadcasted motor position state */
+  socket.on(Room.MOTOR, function(msg) {
+    log(msg.memo);
+    // TODO: fix this mess
+    $('#currentPositionX').val(msg.data.X);
+    $('#currentPositionY').val(msg.data.Y);
+    $('#currentPositionZ').val(msg.data.Z);
+  })
+
+  /**
+   * * * * * * * * * * X AXIS * * * * * * * * * * 
+   */
+
+  /* Triggered live while slider is moved */
+  $('#sliderX').bind('input', function () {
+    log(`Updating current X slider position...`);
+    $('#sliderPositionX').val($('#sliderX').val());
+  });
+
+  /* Triggered when slider is finished moving */
+  $('#sliderX').on('change', function () {
+    log(`Slider finished moving, updating X destination`);
+    $('#desiredPositionX').val($('#sliderX').val());
+    sendDesiredPosition("X", $('#sliderX').val());
+  });
+
+  /**
+   * * * * * * * * * * Y AXIS * * * * * * * * * * 
+   */
+
+  /* Triggered live while slider is moved */
+  $('#sliderY').bind('input', function () {
+    log(`Updating current Y slider position...`);
+    $('#sliderPositionY').val($('#sliderY').val());
+  });
+
+  /* Triggered when slider is finished moving */
+  $('#sliderY').on('change', function () {
+    log(`Slider finished moving, updating Y destination`);
+    $('#desiredPositionY').val($('#sliderY').val());
+    sendDesiredPosition("Y", $('#sliderY').val());
+  });
+
+  /**
+   * * * * * * * * * * Z AXIS * * * * * * * * * * 
+   */
+
+  /* Triggered live while slider is moved */
+  $('#sliderZ').bind('input', function () {
+    log(`Updating current Z slider position...`);
+    $('#sliderPositionZ').val($('#sliderZ').val());
+  });
+
+  /* Triggered when slider is finished moving */
+  $('#sliderZ').on('change', function () {
+    log(`Slider finished moving, updating Z destination`);
+    $('#desiredPositionZ').val($('#sliderZ').val());
+    sendDesiredPosition("Z", $('#sliderZ').val());
+  });
+
+  /**
+   * * * * * * * * * * PRESETS * * * * * * * * * * 
+   */
 
   /* Save current state as preset */
   longclick($("#presetButtonA"), function() {
-    console.log("Updated Preset A")
-  });
-
-  longclick($("#presetButtonB"), function() {
-    console.log("Updated Preset B")
+    log("Updating Preset A");
+    socket.emit(Room.PRESET_ASSIGN, {
+      room: Room.PRESET_ASSIGN,
+      data: "A"
+    });
   });
 
   /* Apply saved preset state */
   $("#presetButtonA").dblclick(function() {
-    console.log("Apply Preset A");
+    log("Applying Preset A");
+    socket.emit(Room.PRESET_APPLY, {
+      room: Room.PRESET_APPLY,
+      data: "A"
+    });
   });
 
+  /* Save current state as preset */
+  longclick($("#presetButtonB"), function() {
+    log("Updating Preset B");
+    socket.emit(Room.PRESET_ASSIGN, {
+      room: Room.PRESET_ASSIGN,
+      data: "B"
+    });
+  });
+
+  /* Apply saved preset state */
   $("#presetButtonB").dblclick(function() {
-    console.log("Apply Preset B");
+    log("Applying Preset B");
+    socket.emit(Room.PRESET_APPLY, {
+      room: Room.PRESET_APPLY,
+      data: "B"
+    });
   });
-
-  /* Fetch and apply latest state from backend */
-  $("#sync").on("click", function() {
-    console.log("Syncing state")
-    location.reload();
-  })
-
-  /* Enable toast notifications */
-  $(".toast").toast("show");
 
 });

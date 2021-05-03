@@ -131,6 +131,8 @@ class Motor(object):
         return self.position
 
     def visit(self, position):
+        # incoming websocket payload is most likely a string
+        position = int(position)
         target = self._clamp(position)
         if position != target:
             log.warning(
@@ -154,8 +156,11 @@ class Motor(object):
         self.position = 0
         return self.position
 
+    # TODO: maybe change to to_dict()
     def config(self):
         return dict(
+            name=self.name,
+            delay=self.delay,
             position=self.position,
             min_position=self.min_position,
             max_position=self.max_position,

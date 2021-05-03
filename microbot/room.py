@@ -8,9 +8,17 @@ log = logging.getLogger(__name__)
 
 
 class Room(Enum):
+    """
+    This Enum needs to be kept synchronized with the JS object
+    """
+
     # all motors use the same room with the motor specified in the 'data' property
     MOTOR = "motor"
-    # these messages are used to push toast notifications in the interface
+    # updating the presets
+    PRESET_ASSIGN = "preset.assign"
+    PRESET_APPLY = "preset.apply"
+    # these messages are used to push notifications in the interface
+    LOG = "log"
     INFO = "info"
     ERROR = "error"
 

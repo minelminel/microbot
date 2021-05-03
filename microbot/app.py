@@ -1,7 +1,7 @@
 """
 app.py
 """
-import time, uuid
+import time, uuid, logging
 from flask import Flask, session, render_template, url_for, jsonify
 from flask_socketio import (
     SocketIO,
@@ -14,65 +14,112 @@ from flask_socketio import (
     disconnect,
 )
 
+from microbot.room import Room
+from microbot.motor import Motor
+from microbot.preset import Preset
+from microbot.controller import Controller
+from microbot.message import Message, MessageSchema
+
+log = logging.getLogger(__name__)
+
 app = Flask(__name__)
 app.config.update({"SECRET_KEY": "asdf1234"})
 socketio = SocketIO(app)
 
+controller = Controller(
+    motors={
+        "X": Motor(
+            name="X", control_pins=[0, 1, 2, 3], min_position=0, max_position=100
+        ),
+        "Y": Motor(
+            name="Y", control_pins=[4, 5, 6, 7], min_position=0, max_position=100
+        ),
+        "Z": Motor(
+            name="Z", control_pins=[8, 9, 10, 11], min_position=-45, max_position=45
+        ),
+    },
+    presets={
+        "A": Preset(name="A"),
+        "B": Preset(name="B"),
+    },
+)
+schema = MessageSchema()
 
-class State(object):
-    min_position = 0
-    max_position = 10
-    current_position = 5
 
-    def state(self):
-        keys = ("min_position", "max_position", "current_position")
-        return {key: getattr(self, key) for key in keys}
+def broadcast_state():
+    # TODO: refactor into isolated events
+    log.info("Broadcasting motor state")
+    reply = schema.dump(
+        {
+            "type": Room.MOTOR.value,
+            "memo": "Receiving broadcasted motor state update",
+            "data": controller.get_motor_state(),
+        }
+    )
+    emit(Room.MOTOR.value, reply)
 
 
-state = State()
-
-LOCK = False
-
-
-@socketio.on("my_event")  # namespace="/something"
-def join_test(message):
-    print("Joining room test!")
-    print(message)
-    join_room(message["room"])
-    session["receive_count"] = session.get("receive_count", 0) + 1
+@socketio.on(Room.PRESET_ASSIGN.value)
+def handle_preset_assign(msg):
+    """
+    Incoming message .data property is a string corresponding to the preset
+    key which should be updated using the current motor position state.
+    """
+    log.info(msg)
+    msg = schema.load(msg)
+    # TODO: error handling
+    controller.assign_preset(msg.data)
+    reply = schema.dump(
+        {
+            "type": Room.INFO.value,
+            "memo": f"Preset {msg.data} assigned successfully",
+        }
+    )
     emit(
-        "my_response",
-        {"data": f"In rooms: {rooms()}", "count": session["receive_count"]},
+        Room.LOG.value,
+        reply,
     )
 
 
-@socketio.on("message")
-def handle_message(msg):
-    global LOCK
-    if LOCK:
-        print("!! LOCK ENABLED !!")
-        return
-    else:
-        LOCK = True
-    print(f"Message: {msg}, Type: {type(msg)}")
-    # logic
-    desired_position = int(msg)
-    # how many steps do we need to take
-    incr = [1, -1][desired_position < state.current_position]
-    steps = abs(state.current_position - desired_position)
-    for _ in range(steps):
-        print(f"Stepping current position by: {incr}")
-        state.current_position += incr
-        time.sleep(0.01)
-        send(state.current_position, broadcast=True)
-    LOCK = False
-    emit("info", {"type": "info", "memo": "hello world!", "guid": str(uuid.uuid4())})
+@socketio.on(Room.PRESET_APPLY.value)
+def handle_preset_apply(msg):
+    """
+    Incoming message .data property is a string corresponding to the preset
+    key which should be applied using the stored motor position state.
+    """
+    log.info(msg)
+    msg = schema.load(msg)
+    # TODO: error handling
+    controller.apply_preset(msg.data)
+    reply = schema.dump(
+        {"type": Room.INFO.value, "memo": f"Preset {msg.data} applied successfully"}
+    )
+    emit(
+        Room.LOG.value,
+        reply,
+    )
+    broadcast_state()
+
+
+@socketio.on(Room.MOTOR.value)
+def handle_motor_visit(msg):
+    """
+    Incoming message .data property is a key-value pair of the motor we wish to
+    control and the target position to move it to.
+    """
+    msg = schema.load(msg)
+    # TODO: error handling
+    controller.visit_position(msg.data)
+    reply = schema.dump(
+        {"type": Room.INFO.value, "memo": f"Motor position updated: {msg.data}"}
+    )
+    emit(Room.LOG.value, reply)
+    broadcast_state()
 
 
 @app.route("/")
 def index():
-    print(state.state())
-    return render_template("index.html", state=state.state())
+    return render_template("index.html", motors=controller.get_motor_config())
 
 
 @app.route("/settings")
