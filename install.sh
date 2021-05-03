@@ -18,12 +18,18 @@ else
 fi
 
 python3 -m pip install --upgrade pip setuptools wheel virtualenv
-
 python3 -m virtualenv env
 source env/bin/activate
 pip install -r $(ls *requirements.txt)
 pip install -e .
 pytest
+
+# Create a config file if none exists, using the example
+if [ -f config.json ]; then
+do
+    echo "Creating configuration file"
+    cp example-config.json config.json
+fi
 
 HOST=$(ifconfig wlan0 | grep 'inet ' | xargs | cut -d' ' -f2)
 echo "HOST: $HOST"

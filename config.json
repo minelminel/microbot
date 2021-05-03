@@ -1,0 +1,33 @@
+{
+    "motors": {
+        "X": {
+            "name": "X",
+            "delay": 0.001,
+            "control_pins": [2, 3, 4, 17],
+            "min_position": -100,
+            "max_position": 100
+        },
+        "Y": {
+            "name": "Y",
+            "delay": 0.001,
+            "control_pins": [27, 22, 10, 9],
+            "min_position": -100,
+            "max_position": 100
+        },
+        "Z": {
+            "name": "Z",
+            "delay": 0.001,
+            "control_pins": [11, 5, 13, 19],
+            "min_position": -45,
+            "max_position": 45
+        }
+    },
+    "presets": {
+        "A": {
+            "name": "A"
+        },
+        "B": {
+            "name": "B"
+        }
+    }
+}
