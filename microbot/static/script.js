@@ -36,10 +36,6 @@ $(document).ready(function () {
   socket.on('connect', function () {
     log('Connected to server');
     /* `connect` is a reserved keyword */
-    // socket.emit('my_event', {
-    //   data: "I'm connected!",
-    //   room: 'A'
-    // });
   });
 
   /* Listed for log messages and push to the log component */
@@ -106,114 +102,52 @@ $(document).ready(function () {
   /* Receive the broadcasted motor position state */
   socket.on(Room.MOTOR, function(msg) {
     log(msg.memo);
-    // TODO: fix this mess
-    // Update current position values
-    $('#currentPositionX').val(msg.data.X);
-    $('#currentPositionY').val(msg.data.Y);
-    $('#currentPositionZ').val(msg.data.Z);
-    // Update live markers to match new position
-    $("#sliderPositionX").val(msg.data.X);
-    $("#sliderPositionY").val(msg.data.Y);
-    $("#sliderPositionZ").val(msg.data.Z);
-    // Update desired markers to match new position
-    $("#desiredPositionX").val(msg.data.X);
-    $("#desiredPositionY").val(msg.data.Y);
-    $("#desiredPositionZ").val(msg.data.Z);
-    // Update sliders to match new position
-    $("#sliderX").val(msg.data.X);
-    $("#sliderY").val(msg.data.Y);
-    $("#sliderZ").val(msg.data.Z);
+    // {[msg.data]: {X: <int>, Y: <int>, Z: <int>}}
+    for (const [motor, position] of Object.entries(msg.data)) {
+      $(`#currentPosition${motor}`).val(position);
+      $(`#sliderPosition${motor}`).val(position);
+      $(`#desiredPosition${motor}`).val(position);
+      $(`#slider${motor}`).val(position);
+    };
   })
 
   /**
-   * * * * * * * * * * X AXIS * * * * * * * * * * 
+   * * * * * * * * * * AXES * * * * * * * * * * 
    */
-
-  /* Triggered live while slider is moved */
-  $('#sliderX').bind('input', function () {
-    log(`Updating current X slider position...`);
-    $('#sliderPositionX').val($('#sliderX').val());
-  });
-
+  for (const motor of ["X", "Y", "Z"]) {
+    /* Triggered live while slider is moved */
+    $(`#slider${motor}`).bind('input', function () {
+      log(`Updating current ${motor} slider position...`);
+      $(`#sliderPosition${motor}`).val($(`#slider${motor}`).val());
+    });
   /* Triggered when slider is finished moving */
-  $('#sliderX').on('change', function () {
-    log(`Slider finished moving, updating X destination`);
-    $('#desiredPositionX').val($('#sliderX').val());
-    sendDesiredPosition("X", $('#sliderX').val());
+  $(`#slider${motor}`).on('change', function () {
+    log(`Slider finished moving, updating ${motor} destination`);
+    $(`#desiredPosition${motor}`).val($(`#slider${motor}`).val());
+    sendDesiredPosition(motor, $(`#slider${motor}`).val());
   });
-
-  /**
-   * * * * * * * * * * Y AXIS * * * * * * * * * * 
-   */
-
-  /* Triggered live while slider is moved */
-  $('#sliderY').bind('input', function () {
-    log(`Updating current Y slider position...`);
-    $('#sliderPositionY').val($('#sliderY').val());
-  });
-
-  /* Triggered when slider is finished moving */
-  $('#sliderY').on('change', function () {
-    log(`Slider finished moving, updating Y destination`);
-    $('#desiredPositionY').val($('#sliderY').val());
-    sendDesiredPosition("Y", $('#sliderY').val());
-  });
-
-  /**
-   * * * * * * * * * * Z AXIS * * * * * * * * * * 
-   */
-
-  /* Triggered live while slider is moved */
-  $('#sliderZ').bind('input', function () {
-    log(`Updating current Z slider position...`);
-    $('#sliderPositionZ').val($('#sliderZ').val());
-  });
-
-  /* Triggered when slider is finished moving */
-  $('#sliderZ').on('change', function () {
-    log(`Slider finished moving, updating Z destination`);
-    $('#desiredPositionZ').val($('#sliderZ').val());
-    sendDesiredPosition("Z", $('#sliderZ').val());
-  });
+  }
 
   /**
    * * * * * * * * * * PRESETS * * * * * * * * * * 
    */
-
-  /* Save current state as preset */
-  longclick($("#presetButtonA"), function() {
-    log("Assigning Preset A");
-    socket.emit(Room.PRESET_ASSIGN, {
-      room: Room.PRESET_ASSIGN,
-      data: "A"
+  for (const preset of ["A", "B"]) {
+    /* Save current state as preset */
+    longclick($(`#presetButton${preset}`), function() {
+      log(`Assigning Preset ${preset}`);
+      socket.emit(Room.PRESET_ASSIGN, {
+        room: Room.PRESET_ASSIGN,
+        data: preset
+      });
     });
-  });
-
-  /* Apply saved preset state */
-  $("#presetButtonA").dblclick(function() {
-    log("Applying Preset A");
-    socket.emit(Room.PRESET_APPLY, {
-      room: Room.PRESET_APPLY,
-      data: "A"
+    /* Apply saved preset state */
+    $(`#presetButton${preset}`).dblclick(function() {
+      log(`Applying Preset ${preset}`);
+      socket.emit(Room.PRESET_APPLY, {
+        room: Room.PRESET_APPLY,
+        data: preset
+      });
     });
-  });
-
-  /* Save current state as preset */
-  longclick($("#presetButtonB"), function() {
-    log("Assigning Preset B");
-    socket.emit(Room.PRESET_ASSIGN, {
-      room: Room.PRESET_ASSIGN,
-      data: "B"
-    });
-  });
-
-  /* Apply saved preset state */
-  $("#presetButtonB").dblclick(function() {
-    log("Applying Preset B");
-    socket.emit(Room.PRESET_APPLY, {
-      room: Room.PRESET_APPLY,
-      data: "B"
-    });
-  });
+  }
 
 });

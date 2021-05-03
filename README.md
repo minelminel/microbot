@@ -4,8 +4,8 @@
 
 ### TODO:
 - spend some time working-out how we want to handle return types, focusing on reducing the cases where we perform an action and then immediately query for the state
-- broadcase more logs to the interface with specific values for visual verification
-- expand test cases to cover recognized issues, especially with applying/assigning presets
+- broadcast more logs to the interface with specific values for visual verification
+- ~~expand test cases to cover recognized issues, especially with applying/assigning presets~~
 - create some basic documentation and expand the readme to look nice at a glance
 - need some way of showing the user which state values are associated with each preset button
 - settings page which allows runtime adjustment of properties such as delay, step mode, min/max, etc
