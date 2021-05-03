@@ -63,9 +63,9 @@ class Controller(object):
         log.debug(f"Fetching preset state: {preset}")
         return self._presets[preset].state(value_only)
 
-    def assign_preset(self, preset: str, state: dict) -> None:
+    def assign_preset(self, preset: str) -> None:
         log.debug(f"Assigning preset: {preset}")
-        self._presets[preset].assign(state)
+        self._presets[preset].assign(self.get_motor_state())
 
     def apply_preset(self, preset: str) -> None:
         log.debug(f"Applying preset: {preset}")

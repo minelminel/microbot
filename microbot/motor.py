@@ -27,8 +27,8 @@ class Motor(object):
 
     name = None
     delay = 0.0001
-    control_pins = []
-    _state = {}  # debugging & testing, use .pins property
+    # control_pins = []
+    # _state = {}  # debugging & testing, use .pins property
 
     position = 0
     min_position = None
@@ -45,19 +45,17 @@ class Motor(object):
     def __init__(
         self,
         name=None,
+        control_pins=None,
         min_position=None,
         max_position=None,
-        control_pins=None,
         delay=None,
     ):
         # properties
         self.name = name
+        self.control_pins = control_pins
         self.min_position = min_position
         self.max_position = max_position
         self.delay = delay if delay is not None else self.delay
-        self.control_pins = (
-            control_pins if control_pins is not None else self.control_pins
-        )
         self._state = dict.fromkeys(self.control_pins, 0)
         # runtime checks
         if len(self._state.keys()) != len(self.control_pins):

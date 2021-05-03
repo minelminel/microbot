@@ -107,9 +107,14 @@ $(document).ready(function () {
   socket.on(Room.MOTOR, function(msg) {
     log(msg.memo);
     // TODO: fix this mess
+    // Update current position values
     $('#currentPositionX').val(msg.data.X);
     $('#currentPositionY').val(msg.data.Y);
     $('#currentPositionZ').val(msg.data.Z);
+    // Update sliders to match new position
+    $("#sliderX").val(msg.data.X);
+    $("#sliderY").val(msg.data.Y);
+    $("#sliderZ").val(msg.data.Z);
   })
 
   /**
@@ -169,7 +174,7 @@ $(document).ready(function () {
 
   /* Save current state as preset */
   longclick($("#presetButtonA"), function() {
-    log("Updating Preset A");
+    log("Assigning Preset A");
     socket.emit(Room.PRESET_ASSIGN, {
       room: Room.PRESET_ASSIGN,
       data: "A"
@@ -187,7 +192,7 @@ $(document).ready(function () {
 
   /* Save current state as preset */
   longclick($("#presetButtonB"), function() {
-    log("Updating Preset B");
+    log("Assigning Preset B");
     socket.emit(Room.PRESET_ASSIGN, {
       room: Room.PRESET_ASSIGN,
       data: "B"

@@ -10,10 +10,11 @@ class Preset(object):
 
     lock = threading.Lock()
     name = None
-    _state = {}
+    _state = None
 
     def __init__(self, name=None):
         self.name = name if name is not None else self.name
+        self._state = {}
 
     def __repr__(self):
         return "<{} at {} state={}>".format(
@@ -21,9 +22,7 @@ class Preset(object):
         )
 
     def state(self, value_only=False):
-        if value_only:
-            return self._state
-        return {self.name: self._state}
+        return self._state
 
     def assign(self, state):
         log.debug(f"Saving preset {self.name} state: {state}")

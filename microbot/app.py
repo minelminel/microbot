@@ -68,7 +68,7 @@ def handle_preset_assign(msg):
     log.info(msg)
     msg = schema.load(msg)
     # TODO: error handling
-    controller.assign_preset(msg.data, controller.get_motor_state())
+    controller.assign_preset(msg.data)
     reply = schema.dump(
         {
             "type": Room.INFO.value,

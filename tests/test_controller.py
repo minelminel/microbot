@@ -28,11 +28,8 @@ def test_controller_constructor():
     assert controller.get_motor_state("Y") == 0
     assert controller.get_motor_state("Z") == 0
 
-    assert controller.get_preset_state("A") == {"A": {}}
-    assert controller.get_preset_state("A") == {"A": {}}
-
-    assert controller.get_preset_state("B", value_only=True) == {}
-    assert controller.get_preset_state("B", value_only=True) == {}
+    assert controller.get_preset_state("A") == {}
+    assert controller.get_preset_state("B") == {}
 
 
 def test_controller_presets():
@@ -53,9 +50,9 @@ def test_controller_presets():
             "B": Preset(name="B"),
         },
     )
-
-    controller.assign_preset("A", {"X": 1, "Y": 2, "Z": 3})
-    assert controller.get_preset_state("A", value_only=True) == {"X": 1, "Y": 2, "Z": 3}
+    controller.visit_position({"X": 1, "Y": 2, "Z": 3})
+    controller.assign_preset("A")
+    assert controller.get_preset_state("A") == {"X": 1, "Y": 2, "Z": 3}
 
 
 def test_controller_motors():
@@ -89,7 +86,7 @@ def test_controller_motors():
     assert controller.get_motor_state() == {"X": 1, "Y": 2, "Z": 3}
 
 
-def test_controller_autonomy():
+def test_controller_workflow():
     controller = Controller(
         motors={
             "X": Motor(
@@ -107,6 +104,21 @@ def test_controller_autonomy():
             "B": Preset(name="B"),
         },
     )
-    controller.assign_preset("A", {"X": 1, "Y": 2, "Z": 3})
+    # check baseline states
+    assert controller.presets["A"].state() == {}
+    assert controller.presets["B"].state() == {}
+    assert controller.get_motor_state() == {"X": 0, "Y": 0, "Z": 0}
+    # move to new position
+    controller.visit_position({"X": 1, "Y": 2, "Z": 3})
+    assert controller.get_motor_state() == {"X": 1, "Y": 2, "Z": 3}
+    assert controller.presets["A"].state() == {}
+    assert controller.presets["B"].state() == {}
+    # assign preset, make sure other is not affected
+    controller.assign_preset("A")
+    assert controller.presets["A"].state() == {"X": 1, "Y": 2, "Z": 3}
+    assert controller.presets["B"].state() == {}
+    # apply preset, check position
     controller.apply_preset("A")
     assert controller.get_motor_state() == {"X": 1, "Y": 2, "Z": 3}
+    assert controller.presets["A"].state() == {"X": 1, "Y": 2, "Z": 3}
+    assert controller.presets["B"].state() == {}
