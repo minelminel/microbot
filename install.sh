@@ -8,31 +8,28 @@ set -e
 
 main() {
     REPO=microbot
-    cd $HOME
+    cd "$HOME"
 
-    if [ ! -d ${HOME}/${REPO} ]; then
-    do
-        git clone https://github.com/minelminel/${REPO}
-        cd ${REPO}
+    if [ ! -d "${HOME}/${REPO}" ]; then
+        git clone "https://github.com/minelminel/${REPO}"
+        cd "${REPO}"
     else
-        cd ${REPO}
+        cd "${REPO}"
         git pull origin master
     fi
 
     python3 -m pip install --upgrade pip setuptools wheel virtualenv
-    if [ ! -d ${HOME}/${REPO}/env ]; then
-    do
+    if [ ! -d "${HOME}/${REPO}/env" ]; then
         echo "Creating new virtual environment"
         python3 -m virtualenv env
     fi
     source env/bin/activate
-    pip install -r $(ls *requirements.txt)
+    pip install -r "$(find . -type f -name '*requirements.txt' -print | xargs)"
     pip install -e .
     pytest
 
     # Create a config file if none exists, using the example
     if [ -f config.json ]; then
-    do
         echo "Creating configuration file"
         cp example-config.json config.json
     fi
