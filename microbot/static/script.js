@@ -111,6 +111,14 @@ $(document).ready(function () {
     $('#currentPositionX').val(msg.data.X);
     $('#currentPositionY').val(msg.data.Y);
     $('#currentPositionZ').val(msg.data.Z);
+    // Update live markers to match new position
+    $("#sliderPositionX").val(msg.data.X);
+    $("#sliderPositionY").val(msg.data.Y);
+    $("#sliderPositionZ").val(msg.data.Z);
+    // Update desired markers to match new position
+    $("#desiredPositionX").val(msg.data.X);
+    $("#desiredPositionY").val(msg.data.Y);
+    $("#desiredPositionZ").val(msg.data.Z);
     // Update sliders to match new position
     $("#sliderX").val(msg.data.X);
     $("#sliderY").val(msg.data.Y);
