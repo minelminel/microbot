@@ -60,31 +60,33 @@ class Controller(object):
         return self._presets
 
     def get_preset_state(self, preset: str, value_only=False) -> dict:
-        log.info(f"Fetching preset state: {preset}")
+        log.debug(f"Fetching preset state: {preset}")
         return self._presets[preset].state(value_only)
 
     def assign_preset(self, preset: str, state: dict) -> None:
-        log.info(f"Assigning preset: {preset}")
+        log.debug(f"Assigning preset: {preset}")
         self._presets[preset].assign(state)
 
     def apply_preset(self, preset: str) -> None:
-        log.info(f"Applying preset: {preset}")
+        log.debug(f"Applying preset: {preset}")
         self.visit_position(self._presets[preset].state(value_only=True))
 
     def get_motor_state(self, motor=None):
-        log.info(f"Fetching motor state: {motor}")
         if motor:
+            log.debug(f"Fetching motor state: {motor}")
             return self._motors[motor].state(value_only=True)
+        log.debug(f"Fetching all motor states")
         return {k: v.state(value_only=True) for k, v in self._motors.items()}
 
     def visit_position(self, state: dict) -> None:
-        log.info(f"Visiting motor position: {state}")
+        log.debug(f"Visiting motor position: {state}")
         for motor, position in state.items():
             self._motors[motor].visit(position)
 
     # TODO: add test cases
     def get_motor_config(self, motor: str = None) -> dict:
-        log.info(f"Getting motor config: {motor}")
         if motor:
+            log.debug(f"Getting motor config: {motor}")
             return self._motors[motor].config()
+        log.debug(f"Getting all motor configs")
         return {k: v.config() for k, v in self._motors.items()}

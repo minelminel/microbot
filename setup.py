@@ -24,7 +24,7 @@ setup(
     ],
     tests_require=["pytest"],
     python_requires=">=3.0.*",
-    entry_points={"console_scripts": ["microbot=microbot:main"]},
+    entry_points={"console_scripts": ["microbot=microbot.__main__:main"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

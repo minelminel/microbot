@@ -1,7 +1,17 @@
 """
 util.py
 """
-import sys, logging
+import sys, logging, uuid, time
+
+log = logging.getLogger(__name__)
+
+
+def make_uuid():
+    return str(uuid.uuid4())
+
+
+def make_time():
+    return int(time.time() * 1000)
 
 
 def configure_logging(app):
@@ -27,7 +37,7 @@ def configure_logging(app):
     logging.basicConfig(
         datefmt="%m/%d/%Y %I:%M:%S %p", level=log_level, handlers=handlers
     )
-    for _module, _level in app.config.get("LOGGING_OVERRIDES", {}).items():
+    for _module, _level in app.config.get("LOG_OVERRIDES", {}).items():
         log.debug(f"Overriding module logging: {_module} --> {_level}")
         logging.getLogger(_module).setLevel(_level)
     return app

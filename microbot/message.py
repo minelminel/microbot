@@ -5,10 +5,9 @@ import logging, uuid, time
 from types import SimpleNamespace
 import marshmallow as ma
 
-log = logging.getLogger(__name__)
+from microbot.util import make_uuid, make_time
 
-make_uuid = lambda: str(uuid.uuid4())
-make_time = lambda: int(time.time() * 1000)
+log = logging.getLogger(__name__)
 
 
 class Message(SimpleNamespace):

@@ -5,6 +5,8 @@ import time, uuid, logging, threading
 from functools import partial
 from collections import defaultdict
 
+from microbot.util import make_uuid
+
 log = logging.getLogger(__name__)
 
 try:
@@ -14,12 +16,9 @@ except Exception as exc:
 
     class GPIO_MOCK(object):
         def __getattr__(self, prop):
-            return lambda *args: None
+            return lambda *args, **kwargs: None
 
     GPIO = GPIO_MOCK()
-
-# utils.py
-make_uuid = lambda: str(uuid.uuid4())
 
 
 class Motor(object):
@@ -88,8 +87,8 @@ class Motor(object):
     # Internal API
     #
     def _gpio(self, callback):
-        log.debug(callable)
-        # callback()
+        # log.debug(callable)
+        callback()
         pass
 
     def _clamp(self, target):
@@ -121,12 +120,12 @@ class Motor(object):
         return self._state
 
     def increment(self):
-        log.debug(f"Incrementing motor {self.name} 1 step...")
+        log.debug(f"Incrementing motor {self} by 1 step...")
         self._move(self.sequence, 1)
         return self.position
 
     def decrement(self):
-        log.debug(f"Decrementing motor {self.name} 1 step...")
+        log.debug(f"Decrementing motor {self} by 1 step...")
         self._move(self.sequence[::], -1)
         return self.position
 

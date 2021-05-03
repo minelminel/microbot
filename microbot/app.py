@@ -2,7 +2,7 @@
 app.py
 """
 import time, uuid, logging
-from flask import Flask, session, render_template, url_for, jsonify
+from flask import Blueprint, current_app, render_template, url_for, jsonify, request
 from flask_socketio import (
     SocketIO,
     send,
@@ -22,9 +22,8 @@ from microbot.message import Message, MessageSchema
 
 log = logging.getLogger(__name__)
 
-app = Flask(__name__)
-app.config.update({"SECRET_KEY": "asdf1234"})
-socketio = SocketIO(app)
+bp = Blueprint("app", __name__)
+socketio = SocketIO()
 
 controller = Controller(
     motors={
@@ -48,12 +47,13 @@ schema = MessageSchema()
 
 def broadcast_state():
     # TODO: refactor into isolated events
-    log.info("Broadcasting motor state")
+    state = controller.get_motor_state()
+    log.debug(f"Broadcasting motor state: {state}")
     reply = schema.dump(
         {
             "type": Room.MOTOR.value,
-            "memo": "Receiving broadcasted motor state update",
-            "data": controller.get_motor_state(),
+            "memo": f"Receiving broadcasted motor state: {state}",
+            "data": state,
         }
     )
     emit(Room.MOTOR.value, reply)
@@ -68,7 +68,7 @@ def handle_preset_assign(msg):
     log.info(msg)
     msg = schema.load(msg)
     # TODO: error handling
-    controller.assign_preset(msg.data)
+    controller.assign_preset(msg.data, controller.get_motor_state())
     reply = schema.dump(
         {
             "type": Room.INFO.value,
@@ -117,21 +117,11 @@ def handle_motor_visit(msg):
     broadcast_state()
 
 
-@app.route("/")
+@bp.route("/")
 def index():
     return render_template("index.html", motors=controller.get_motor_config())
 
 
-@app.route("/settings")
+@bp.route("/settings")
 def settings():
     return jsonify(settings={})
-
-
-if __name__ == "__main__":
-    # TODO run this only in dev
-    from werkzeug.debug import DebuggedApplication
-
-    app.debug = True
-    app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
-
-    socketio.run(app)
