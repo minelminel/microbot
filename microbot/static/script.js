@@ -4,6 +4,14 @@ $(document).ready(function () {
   var socket = io.connect('http://localhost:5000');
 
   /**
+   * Toggle existing spinner between visible & hidden to provide
+   * feedback about long-running processes.
+   */
+  function isLoading(show) {
+    $(`#spinner`).fadeToggle(show);
+  }
+
+  /**
    * Room Enumeration
    */
   // TODO: maybe fetch this from an endpoint?
@@ -27,6 +35,7 @@ $(document).ready(function () {
   /* Fetch and apply latest state from backend */
   $("#sync").on("click", function() {
     log("Syncing state")
+    isLoading(true);
     location.reload();
   })
 
@@ -91,6 +100,7 @@ $(document).ready(function () {
    */
   function sendDesiredPosition(motor, value) {
     log(`Sending new desired position for: ${motor}`);
+    isLoading(true);
     socket.emit(Room.MOTOR, {
       room: Room.MOTOR,
       data: {
@@ -109,6 +119,7 @@ $(document).ready(function () {
       $(`#desiredPosition${motor}`).val(position);
       $(`#slider${motor}`).val(position);
     };
+    isLoading(false);
   })
 
   /**
@@ -143,6 +154,7 @@ $(document).ready(function () {
     /* Apply saved preset state */
     $(`#presetButton${preset}`).dblclick(function() {
       log(`Applying Preset ${preset}`);
+      isLoading(true);
       socket.emit(Room.PRESET_APPLY, {
         room: Room.PRESET_APPLY,
         data: preset
