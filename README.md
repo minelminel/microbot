@@ -4,7 +4,7 @@
 
 ```bash
 # Install
-curl https://raw.githubusercontent.com/minelminel/microbot/master/microbot/install.sh | bash
+curl https://raw.githubusercontent.com/minelminel/microbot/master/install.sh | bash
 
 # Run
 gunicorn \
