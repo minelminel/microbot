@@ -1,5 +1,6 @@
 # microbot 🎤 🤖
 
+![image](https://user-images.githubusercontent.com/46664545/116843996-bc32bb80-abaf-11eb-8d7a-95d01616ffaa.png)
 
 ### TODO:
 - spend some time working-out how we want to handle return types, focusing on reducing the cases where we perform an action and then immediately query for the state
