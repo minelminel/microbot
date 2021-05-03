@@ -29,3 +29,7 @@ legend {
 .toast {
     min-width: 20rem;
 }
+
+.bordered {
+    border: 2px solid var(--light);
+}

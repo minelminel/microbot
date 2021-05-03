@@ -109,3 +109,12 @@ class Controller(object):
             return self._motors[motor].config()
         log.debug(f"Getting all motor configs")
         return {k: v.config() for k, v in self._motors.items()}
+
+    def config(self):
+        """
+        Return a JSON object capable of templating a configuration
+        form in the interface for updating values.
+        TODO: should this update the config file?
+        """
+        response = {"motors": {key: obj.config() for key, obj in self.motors.items()}}
+        return response

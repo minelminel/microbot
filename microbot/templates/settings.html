@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container mb-4">
+  <form action="/settings" method="POST">
+  {% for category, objs in config.items() %}
+    <h3>{{ category | upper }}</h3>
+    {% for group, obj in objs.items() %}
+      <fieldset class="bordered">
+      <legend>{{ group }}</legend>
+      {% for key, val in obj.items() %}
+        <div class="form-group">
+          <label>{{ key }}</label>
+          <input name="{{ category }}.{{ group }}.{{ key }}" class="form-control" placeholder="{{ val }}" />
+        </div>
+      {% endfor %}
+      </fieldset>
+    {% endfor %}
+  {% endfor %}
+  <button role="submit" class="btn btn-primary btn-block">Save</button>
+  </form>
+</div>
+<script
+type="text/javascript"
+src="{{ url_for('static', filename='settings.js' )}}"
+></script>
+{% endblock %}

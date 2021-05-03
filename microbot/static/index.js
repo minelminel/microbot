@@ -1,4 +1,4 @@
-console.log(`Loaded script.js`);
+console.log(`Loaded index.js`);
 
 $(document).ready(function () {
   var socket = io.connect('http://localhost:5000');

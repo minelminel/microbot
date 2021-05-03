@@ -2,7 +2,15 @@
 app.py
 """
 import time, uuid, logging
-from flask import Blueprint, current_app, render_template, url_for, jsonify, request
+from flask import (
+    Blueprint,
+    current_app,
+    render_template,
+    url_for,
+    jsonify,
+    request,
+    redirect,
+)
 from flask_socketio import (
     SocketIO,
     send,
@@ -124,6 +132,11 @@ def index():
     return render_template("index.html", motors=controller.get_motor_config())
 
 
-@bp.route("/settings")
+@bp.route("/settings", methods=["GET", "POST"])
 def settings():
-    return jsonify(settings={})
+    if request.method == "GET":
+        return render_template("settings.html", config=controller.config())
+    elif request.method == "POST":
+        # TODO: parse these updated form values and assign to controller
+        log.info(request.form)
+        return redirect(url_for("app.index"))
