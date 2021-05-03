@@ -6,8 +6,14 @@ from microbot import __version__
 name = "microbot"
 here = os.path.dirname(os.path.abspath(__file__))
 
-with open(os.path.join(here, "README.md"), "r") as fh:
-    long_description = fh.read()
+with open(os.path.join(here, "README.md"), "r") as file:
+    long_description = file.read()
+
+with open(os.path.join(here, "requirements.txt"), "r") as file:
+    install_requires = file.read().splitlines()
+
+with open(os.path.join(here, "test-requirements.txt"), "r") as file:
+    tests_require = file.read().splitlines()
 
 setup(
     version=__version__,
@@ -22,7 +28,8 @@ setup(
     packages=[
         "microbot",
     ],
-    tests_require=["pytest"],
+    install_requires=install_requires,
+    tests_require=tests_require,
     python_requires=">=3.0.*",
     entry_points={"console_scripts": ["microbot=microbot.__main__:main"]},
     classifiers=[
