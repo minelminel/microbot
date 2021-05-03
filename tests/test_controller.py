@@ -1,4 +1,4 @@
-import pytest
+import pytest, json, tempfile
 from microbot.controller import Controller
 from microbot.motor import Motor
 from microbot.preset import Preset
@@ -30,6 +30,22 @@ def test_controller_constructor():
 
     assert controller.get_preset_state("A") == {}
     assert controller.get_preset_state("B") == {}
+
+
+def test_controller_from_config():
+    data = {
+        "motors": {
+            "X": {"name": "X", "control_pins": [0, 1, 2, 3]},
+            "Y": {"name": "Y", "control_pins": [4, 5, 6, 7]},
+            "Z": {"name": "Z", "control_pins": [8, 9, 10, 11]},
+        },
+        "presets": {"A": {"name": "A"}, "B": {"name": "B"}},
+    }
+    with tempfile.NamedTemporaryFile(mode="w") as temp:
+        with open(temp.name, "w") as file:
+            json.dump(data, file)
+        controller = Controller.from_config(temp.name)
+    assert isinstance(controller, Controller)
 
 
 def test_controller_presets():

@@ -28,18 +28,18 @@
   <body>
 
   <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <div class="d-flex w-50 order-0">
-      <a class="navbar-brand mr-1" href="{{ url_for('app.index') }}">microbot</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
     <div class="navbar-collapse collapse justify-content-center order-2" id="collapsingNavbar">
       <ul class="navbar-nav">
-        <li class="nav-item active">
+        <!-- <li class="nav-item active">
           <a class="nav-link" href="{{ url_for('app.settings') }}">settings</a>
-        </li>
+        </li> -->
       </ul>
+    </div>
+    <div class="d-flex w-50 order-1">
+      <a class="navbar-brand mr-1" href="{{ url_for('app.index') }}">microbot</a>
+      <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button> -->
     </div>
     <span class="navbar-text small text-truncate mt-1 w-50 text-right order-1 order-md-last"><button id="sync" class="btn btn-outline-secondary btn-sm">sync &olarr;</button></span>
   </nav>

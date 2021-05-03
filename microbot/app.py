@@ -14,6 +14,7 @@ from flask_socketio import (
     disconnect,
 )
 
+from microbot.config import Config
 from microbot.room import Room
 from microbot.motor import Motor
 from microbot.preset import Preset
@@ -25,23 +26,24 @@ log = logging.getLogger(__name__)
 bp = Blueprint("app", __name__)
 socketio = SocketIO()
 
-controller = Controller(
-    motors={
-        "X": Motor(
-            name="X", control_pins=[0, 1, 2, 3], min_position=0, max_position=100
-        ),
-        "Y": Motor(
-            name="Y", control_pins=[4, 5, 6, 7], min_position=0, max_position=100
-        ),
-        "Z": Motor(
-            name="Z", control_pins=[8, 9, 10, 11], min_position=-45, max_position=45
-        ),
-    },
-    presets={
-        "A": Preset(name="A"),
-        "B": Preset(name="B"),
-    },
-)
+# controller = Controller(
+#     motors={
+#         "X": Motor(
+#             name="X", control_pins=[0, 1, 2, 3], min_position=0, max_position=100
+#         ),
+#         "Y": Motor(
+#             name="Y", control_pins=[4, 5, 6, 7], min_position=0, max_position=100
+#         ),
+#         "Z": Motor(
+#             name="Z", control_pins=[8, 9, 10, 11], min_position=-45, max_position=45
+#         ),
+#     },
+#     presets={
+#         "A": Preset(name="A"),
+#         "B": Preset(name="B"),
+#     },
+# )
+controller = Controller.from_config(Config.MICROBOT_CONFIG)
 schema = MessageSchema()
 
 

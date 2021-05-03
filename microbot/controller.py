@@ -1,7 +1,10 @@
 """
 controller.py
 """
-import logging
+import json, logging
+
+from microbot.motor import Motor
+from microbot.preset import Preset
 
 log = logging.getLogger(__name__)
 
@@ -29,12 +32,12 @@ class Controller(object):
         get_motor_config(motor: str)
     """
 
-    _motors = {}
-    _presets = {}
+    _motors = None
+    _presets = None
 
     def __init__(self, motors=None, presets=None) -> None:
-        self._motors = motors if motors is not None else self._motors
-        self._presets = presets if presets is not None else self._presets
+        self._motors = motors if motors is not None else {}
+        self._presets = presets if presets is not None else {}
 
     def __repr__(self) -> str:
         return "<{} at {} motors={}> presets={}>".format(
@@ -42,6 +45,22 @@ class Controller(object):
             hex(id(self)),
             tuple(self._motors.keys()),
             tuple(self._presets.keys()),
+        )
+
+    @classmethod
+    def from_config(cls, filepath):
+        log.info(f"Loading configuration file: {filepath}")
+        with open(filepath, "r") as file:
+            config = json.load(file)
+
+        return cls(
+            motors={
+                key: Motor(**kwargs) for key, kwargs in config.get("motors", {}).items()
+            },
+            presets={
+                key: Preset(**kwargs)
+                for key, kwargs in config.get("presets", {}).items()
+            },
         )
 
     #

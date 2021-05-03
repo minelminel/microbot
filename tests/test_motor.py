@@ -63,3 +63,21 @@ def test_motor_visit_outside_range():
 def test_motor_duplicate_pins():
     with pytest.raises(RuntimeError):
         motor = Motor(control_pins=[0, 0, 1, 2])
+
+
+def test_motor_increment_outside_range():
+    motor = Motor(
+        name="X", min_position=-5, max_position=5, control_pins=[0, 1, 2, 3], delay=0
+    )
+    for _ in range(10):
+        motor.increment()
+    assert motor.state(value_only=True) == 5
+
+
+def test_motor_decrement_outside_range():
+    motor = Motor(
+        name="X", min_position=-5, max_position=5, control_pins=[0, 1, 2, 3], delay=0
+    )
+    for _ in range(10):
+        motor.decrement()
+    assert motor.state(value_only=True) == -5

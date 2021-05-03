@@ -1,6 +1,7 @@
 flask
 flask-socketio
 marshmallow
+pytest
 # RPi.GPIO
 # gunicorn
 # gevent

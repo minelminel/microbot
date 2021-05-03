@@ -119,11 +119,17 @@ class Motor(object):
 
     def increment(self):
         log.debug(f"Incrementing motor {self} by 1 step...")
+        if (self.max_position is not None) and (self.position + 1 > self.max_position):
+            log.debug(f"Bypassing increment due to max position setting")
+            return self.position
         self._move(self.sequence, 1)
         return self.position
 
     def decrement(self):
         log.debug(f"Decrementing motor {self} by 1 step...")
+        if (self.min_position is not None) and (self.position - 1 < self.min_position):
+            log.debug(f"Bypassing decrement due to min position setting")
+            return self.position
         self._move(self.sequence[::], -1)
         return self.position
 
