@@ -6,42 +6,26 @@ import logging, threading
 log = logging.getLogger(__name__)
 
 
-class Presets(object):
+class Preset(object):
 
-    KEYS = ("A", "B")
     lock = threading.Lock()
-    store = dict.fromkeys(KEYS, None)
+    name = None
+    _state = {}
 
-    def __init__(self):
-        pass
+    def __init__(self, name=None):
+        self.name = name if name is not None else self.name
 
     def __repr__(self):
-        return "<{} at {} store={}>".format(
-            self.__class__.__qualname__, hex(id(self)), self.store
+        return "<{} at {} state={}>".format(
+            self.__class__.__qualname__, hex(id(self)), self._state
         )
 
-    def __getitem__(self, key):
-        if key not in self.store:
-            log.error(f"No preset located with key {key}")
-            raise KeyError(f"No preset located with key {key}")
-        return self.store[key]
+    def state(self, value_only=False):
+        if value_only:
+            return self._state
+        return {self.name: self._state}
 
-    def state(self):
-        return self.store
-
-    def save(self, state):
-        log.debug(f"Saving state: {state}")
+    def assign(self, state):
+        log.debug(f"Saving preset {self.name} state: {state}")
         with self.lock:
-            self.store.update(state)
-
-
-# DRIVER
-if __name__ == "__main__":
-    presets = Presets()
-    print(presets)
-    print(presets.state())
-    print(presets["A"])
-
-    presets.save({"A": {"X": 5}})
-    print(presets.state())
-    print(presets["A"])
+            self._state.update(state)

@@ -147,3 +147,28 @@ pm.state()
 
 repr(pm)
 ```
+
+```py
+controller = Controller(
+  motors = {
+    "X": Motor(name="X", control_pins=[0,1,2,3], min_position=0, max_position=100),
+    "Y": Motor(name="Y", control_pins=[4,5,6,7], min_position=0, max_position=100),
+    "Z": Motor(name="Z", control_pins=[8,9,10,11], min_position=-45, max_position=45),
+  },
+  presets = {
+    "A": Preset(name="A"),
+    "B": Preset(name="B"),
+  }
+)
+
+controller.visit({"X": 5, "Y": 5, "Z": 0})
+
+controller.presets["A"].state()
+controller.presets["A"].assign({"X": 5, "Y": 5, "Z": 0})
+
+controller.visit(
+  controller.presets["A"].state()
+)
+
+
+```

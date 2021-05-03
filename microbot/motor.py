@@ -20,7 +20,6 @@ except Exception as exc:
 
 # utils.py
 make_uuid = lambda: str(uuid.uuid4())
-make_time = lambda: time.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class Motor(object):
@@ -30,6 +29,7 @@ class Motor(object):
     name = None
     delay = 0.0001
     control_pins = []
+    _state = {}  # debugging & testing, use .pins property
 
     position = 0
     min_position = None
@@ -55,11 +55,14 @@ class Motor(object):
         self.name = name
         self.min_position = min_position
         self.max_position = max_position
+        self.delay = delay if delay is not None else self.delay
         self.control_pins = (
             control_pins if control_pins is not None else self.control_pins
         )
-        self.delay = delay if delay is not None else self.delay
+        self._state = dict.fromkeys(self.control_pins, 0)
         # runtime checks
+        if len(self._state.keys()) != len(self.control_pins):
+            raise RuntimeError(f"Cannot assign duplicate control pins")
         if (self.min_position is not None) and (self.max_position is not None):
             if self.min_position > self.max_position:
                 raise RuntimeError(
@@ -106,12 +109,17 @@ class Motor(object):
                 for pin, level in zip(self.control_pins, seq):
                     # level = [GPIO.LOW, GPIO.HIGH][level]  # optional?
                     self._gpio(partial(GPIO.output, pin, level))
+                    self._state.update({pin: level})
                 self._wait()
             self.position += step
 
     #
     # Public API
     #
+    @property
+    def pins(self):
+        return self._state
+
     def increment(self):
         log.debug(f"Incrementing motor {self.name} 1 step...")
         self._move(self.sequence, 1)
@@ -152,14 +160,3 @@ class Motor(object):
             min_position=self.min_position,
             max_position=self.max_position,
         )
-
-
-# DRIVER
-if __name__ == "__main__":
-    motor = Motor("X", control_pins=[1, 2, 3, 4])
-    print(motor)
-    print(motor.state())
-    motor.visit(5)
-    print(motor.state())
-    motor.visit(-5)
-    print(motor.state())
