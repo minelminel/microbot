@@ -18,7 +18,11 @@ else
 fi
 
 python3 -m pip install --upgrade pip setuptools wheel virtualenv
-python3 -m virtualenv env
+if [ ! -d ${HOME}/${REPO}/env ]; then
+do
+    echo "Creating new virtual environment"
+    python3 -m virtualenv env
+fi
 source env/bin/activate
 pip install -r $(ls *requirements.txt)
 pip install -e .
