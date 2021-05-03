@@ -8,13 +8,12 @@ set -e
 
 main() {
     REPO=microbot
-    cd "$HOME"
 
     if [ ! -d "${HOME}/${REPO}" ]; then
         git clone "https://github.com/minelminel/${REPO}"
-        cd "${REPO}"
+        cd "${HOME}/${REPO}"
     else
-        cd "${REPO}"
+        cd "${HOME}/${REPO}"
         git pull origin master
     fi
 
@@ -24,7 +23,8 @@ main() {
         python3 -m virtualenv env
     fi
     source env/bin/activate
-    pip install -r "$(find . -type f -name '*requirements.txt' -print | xargs)"
+    echo "CWD: $(pwd)"
+    find . -type f -name "*requirements.txt" -print | xargs -n1 pip install -r
     pip install -e .
     pytest
 
