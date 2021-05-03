@@ -2,24 +2,24 @@
 
 ![image](https://user-images.githubusercontent.com/46664545/116843996-bc32bb80-abaf-11eb-8d7a-95d01616ffaa.png)
 
+```bash
+# Install
+curl https://raw.githubusercontent.com/minelminel/microbot/master/microbot/install.sh | bash
+
+# Run
+gunicorn \
+  'microbot.core:create_app()' \
+  --name=microbot \
+  --workers=1 \
+  --worker-connections 1000 \
+  --bind=localhost:5000 \
+  -k gevent
+```
+
+
 ### TODO:
-- spend some time working-out how we want to handle return types, focusing on reducing the cases where we perform an action and then immediately query for the state
-- broadcast more logs to the interface with specific values for visual verification
-- ~~expand test cases to cover recognized issues, especially with applying/assigning presets~~
-- create some basic documentation and expand the readme to look nice at a glance
-- need some way of showing the user which state values are associated with each preset button
 - settings page which allows runtime adjustment of properties such as delay, step mode, min/max, etc
 - calibration workflow and code, including test cases
-
-
-- A. Input: live display of slider value
-- B. Input *disabled*: live display of current position
-- C. Slider: bind on slide, update (A) live
-- D. Input *disabled*: display destination position
-  - as (C) is moved, update (A)
-  - when (C) is released fire "onchange" update value of (D)
-  - on change of (D) send command to backend to MOVE
-  - as MOVE is performed, update (B) with current position
 
 
 Websocket Message - Data Model

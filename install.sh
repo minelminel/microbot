@@ -5,21 +5,25 @@
 # curl https://raw.githubusercontent.com/minelminel/microbot/master/microbot/install.sh | sudo bash
 # 
 set -e
+REPO=microbot
+cd $HOME
 
-# create the source folder, if it does not already exist
+if [ ! -d ${HOME}/${REPO} ]; then
+do
+    git clone https://github.com/minelminel/${REPO}
+    cd ${REPO}
+else
+    cd ${REPO}
+    git pull origin master
+fi
 
-# try to clone the repo, if it fails perform a git pull
+python3 -m pip install --upgrade pip setuptools wheel virtualenv
 
-# install system requirements
+python3 -m virtualenv env
+source env/bin/activate
+pip install -r $(ls *requirements.txt)
+pip install -e .
+pytest
 
-# install python3 & venv
-
-# create a virtualenv, source
-
-# install package
-
-# run tests
-
-# create config file if it does not already exist
-
-# 
+HOST=$(ifconfig wlan0 | grep 'inet ' | xargs | cut -d' ' -f2)
+echo "HOST: $HOST"
