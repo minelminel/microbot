@@ -23,7 +23,6 @@ main() {
         python3 -m virtualenv env
     fi
     source env/bin/activate
-    echo "CWD: $(pwd)"
     find . -type f -name "*requirements.txt" -print | xargs -n1 pip install -r
     pip install -e .
     pytest
