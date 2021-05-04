@@ -2,7 +2,7 @@
 # 
 # RASPBERRY PI INSTALLATION SCRIPT
 # 
-# curl https://raw.githubusercontent.com/minelminel/microbot/master/install.sh | sudo bash
+# curl https://raw.githubusercontent.com/minelminel/microbot/master/install.sh | bash
 # 
 set -e
 
