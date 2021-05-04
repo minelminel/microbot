@@ -13,7 +13,6 @@ WorkingDirectory=/home/pi/microbot
 ExecStart=/home/pi/microbot/env/bin/python3 -m gunicorn \
     'microbot.core:create_app()' \
     --name=microbot \
-    --bind=localhost:5000 \
     --workers=1 \
     --worker-connections=1000 \
     -k gevent
