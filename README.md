@@ -19,8 +19,8 @@ gunicorn \
 ```bash
 # Daemon
 sudo apt-get install -y nginx
-sudo cp ./system/microbot.{service,socket} /etc/systemd/system/
-sudo cp ./system/microbot.conf /etc/nginx/conf.d/
+sudo cp ./system/microbot.* /etc/systemd/system/
+sudo cp ./system/nginx.conf /etc/nginx/modules-enabled/default.conf
 sudo systemctl enable --now nginx.service
 sudo systemctl daemon-reload
 ```
