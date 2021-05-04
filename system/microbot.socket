@@ -1,8 +1,9 @@
+# /etc/systemd/system/microbot.socket
 [Unit]
 Description=microbot socket
 
 [Socket]
-ListenStream=/run/gunicorn.sock
+ListenStream=/run/microbot.sock
 # Our service won't need permissions for the socket, since it
 # inherits the file descriptor by socket activation
 # only the nginx daemon will need access to the socket

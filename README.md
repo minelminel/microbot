@@ -16,6 +16,15 @@ gunicorn \
   -k gevent
 ```
 
+```bash
+# Daemon
+sudo apt-get install -y nginx
+sudo cp ./system/microbot.{service,socket} /etc/systemd/system/
+sudo cp ./system/microbot.conf /etc/nginx/conf.d/
+sudo systemctl enable --now nginx.service
+sudo systemctl daemon-reload
+```
+
 
 ### TODO:
 - settings page which allows runtime adjustment of properties such as delay, step mode, min/max, etc

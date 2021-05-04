@@ -1,3 +1,4 @@
+# /etc/systemd/system/microbot.service
 [Unit]
 Description=microbot service
 Requires=microbot.socket
@@ -5,8 +6,8 @@ After=network.target
 
 [Service]
 Type=notify
-User=pi
-Group=pi
+User=www-data
+Group=www-data
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/pi/microbot
 ExecStart=/home/pi/microbot/env/bin/python3 -m gunicorn \
