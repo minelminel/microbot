@@ -6,8 +6,9 @@ After=network.target
 
 [Service]
 Type=notify
-User=www-data
-Group=www-data
+# must run as root-enabled user to access GPIO functionality
+User=pi
+Group=pi
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/pi/microbot
 ExecStart=/home/pi/microbot/env/bin/python3 -m gunicorn \
